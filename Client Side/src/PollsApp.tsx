@@ -18,6 +18,7 @@ export class PollsApp extends Component<{}, PollsAppState> {
     this.state = {page: "list"};
   }
 
+  //Renders the page depending on it's state 
   render = (): JSX.Element => {
     if(this.state.page === "list") {
       if(DEBUG) console.debug("rendering list page");
@@ -31,16 +32,19 @@ export class PollsApp extends Component<{}, PollsAppState> {
     }
   };
 
+  //State is set to "new" when "New" button is clicked
   doNewClick = (): void => {
     if (DEBUG) console.debug("set state to new");
     this.setState({page: "new"});
   };
 
+  //State is set to "poll" when the poll is clicked 
   doPollClick = (name: string): void => {
     if (DEBUG) console.debug(`set state to details for auction ${name}`);
     this.setState({page: {kind: "poll", name}});
   };
 
+  //State is set to "list" or main
   doBackClick = (): void => {
     if(DEBUG) console.debug("set state to list");
     this.setState({page: "list"});

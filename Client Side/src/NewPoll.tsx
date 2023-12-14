@@ -43,7 +43,7 @@ export class NewPoll extends Component<NewPollProps, NewPollState> {
           <textarea id="textbox" rows={3} value={this.state.options}
           onChange={this.doOptionsChange}></textarea>
         </div>
-        <button type="button" onClick={this.doStartClick}>Create</button>
+        <button type="button" onClick={this.doCreateClick}>Create</button>
         <button type="button" onClick={this.doBackClick}>Back</button>
         {this.renderError()}
       </div>);
@@ -59,21 +59,25 @@ export class NewPoll extends Component<NewPollProps, NewPollState> {
         </div>);
   }
 }
+//Set the state of pollName with given name 
 doNameChange = (evt: ChangeEvent<HTMLInputElement>): void => {
   this.setState({pollName: evt.target.value, error: ""});
 }
 
+//Set the state of minutes with given minutes  
 doMinutesChange = (evt: ChangeEvent<HTMLInputElement>): void => {
   this.setState({minutes: evt.target.value, error: ""});
 };
 
+//Set the state of options with given options
 doOptionsChange = (evt: ChangeEvent<HTMLTextAreaElement>): void => {
   const options = evt.target.value;
   const optionsArr = options.split(",");
   this.setState({options: optionsArr, error: ""});
 };
 
-doStartClick = (_: MouseEvent<HTMLButtonElement>): void => {
+//Send poll information back to the server when "Create" is clicked 
+doCreateClick = (_: MouseEvent<HTMLButtonElement>): void => {
   if(this.state.pollName.trim().length === 0 ||
     this.state.minutes.trim().length === 0 ||
     this.state.options.length === 0) {
@@ -92,7 +96,7 @@ doStartClick = (_: MouseEvent<HTMLButtonElement>): void => {
     .catch(() => this.doAddError("failed to connect to server"));
 }
 
-//doAddResp
+//Handle response from the server after poll information has been sent 
 doAddResp = (resp: Response): void => {
   if(resp.status === 200) {
     resp.json().then(this.doAddJson)
@@ -105,7 +109,7 @@ doAddResp = (resp: Response): void => {
   }
 };
 
-//doAddJson
+//Handle the data from the server after poll information has been sent
 doAddJson = (data: unknown): void => {
   if(!isRecord(data)) {
     console.error("bad data from /api/add: not a record", data);
@@ -113,11 +117,13 @@ doAddJson = (data: unknown): void => {
   }
   this.props.onBackClick();
 }
-//doAddError
+  
+//Handle errors 
 doAddError = (msg: string): void => {
   this.setState({error: msg});
 }
 
+//Back to the main page when "Back" is clicked 
 doBackClick = (_: MouseEvent<HTMLButtonElement>): void => {
   this.props.onBackClick();
 };

@@ -1,3 +1,7 @@
+/**
+* Poll Details Page.
+* This page opens when the poll link is clicked from the main page. 
+*/
 import React, { Component, ChangeEvent, MouseEvent} from "react";
 import { Poll, parsePoll } from "./poll";
 import { isRecord } from "./record";
@@ -38,6 +42,7 @@ export class PollDetails extends Component<DetailsProps, DetailsState> {
     };
   }
 
+  //Render when the poll's time is up 
   renderCompleted = (poll: Poll): JSX.Element => {
     if (this.state.poll !== undefined) {
       const min = Math.round((this.state.poll.endTime - this.state.now) / (60 * 1000));
@@ -68,7 +73,7 @@ export class PollDetails extends Component<DetailsProps, DetailsState> {
     return <div>No poll data available</div>;
   };
 
-
+  //Render when the poll is still ongoing 
   renderOngoing = (poll: Poll): JSX.Element => {
     if(this.state.poll !== undefined) {
     const min = Math.round((poll.endTime - this.state.now) / 60 / 100) / 10;
@@ -114,6 +119,8 @@ export class PollDetails extends Component<DetailsProps, DetailsState> {
     return <div>Loading Poll..</div>
   }
   };
+
+  //Render when any errors are thrown
   renderError = (): JSX.Element => {
     if(this.state.error.length === 0) {
       return <div></div>;
@@ -126,7 +133,7 @@ export class PollDetails extends Component<DetailsProps, DetailsState> {
 }
 };
 
-//doRefreshClick
+//Call /get from server to render the updated poll details everytime the page refreshes 
 doRefreshClick = (): void => {
   const args = {name: this.props.name};
   fetch("/api/get", {
@@ -136,7 +143,7 @@ doRefreshClick = (): void => {
     .catch(() => this.doGetError("failed to connect to server"));
   };
 
-//doGetResp
+//Handle the response from the server
 doGetResp = (res: Response): void => {
   if(res.status === 200) {
     res.json().then(this.doGetJson)
@@ -148,6 +155,8 @@ doGetResp = (res: Response): void => {
     this.doGetError(`bad status code from /api/refresh: ${res.status}`);
   }
 };
+
+//Handles the data from the server
 doGetJson = (data: unknown): void => {
   if(!isRecord(data)) {
     console.error("bad data from /api/refresh: not a record", data);
@@ -156,6 +165,7 @@ doGetJson = (data: unknown): void => {
   this.doPollChange(data);
 }
 
+//Updates the state from the data given from the server 
 doPollChange = (data: {poll?: unknown}): void => {
   const poll = parsePoll(data.poll);
   if(poll !== undefined) {
@@ -165,18 +175,22 @@ doPollChange = (data: {poll?: unknown}): void => {
   }
 };
 
+//Handles errors 
 doGetError = (msg: string): void => {
   console.error(`Error fetching /api/refresh: ${msg}`);
 };
 
+//Sets the voterName state to given voter name 
 doVoterChange = (evt: ChangeEvent<HTMLInputElement>): void => {
   this.setState({voterName: evt.target.value, error: ""});
 };
 
+//Sets chosenOption with the selected option
 doOptionNameChange = (evt: ChangeEvent<HTMLInputElement>): void => {
   this.setState({chosenOption: evt.target.value, error: ""});
 }
 
+//Handles when vote is clicked and sends voting information back to the server
 doVoteClick = (_: MouseEvent<HTMLButtonElement>): void => {
   if(this.state.poll === undefined) {
     throw new Error("impossible");
@@ -198,7 +212,7 @@ doVoteClick = (_: MouseEvent<HTMLButtonElement>): void => {
     .catch(() => this.doUpdateError("failed to connect to server"));
 }
 
-//doUpdateResp
+//Handles /update response from server
 doUpdateResp = (res: Response): void => {
   if (res.status === 200) {
     res.json().then(this.doUpdateJson)
@@ -211,6 +225,7 @@ doUpdateResp = (res: Response): void => {
   }
 };
 
+//Handles /update data from server
 doUpdateJson = (data: unknown): void => {
   if (this.state.poll === undefined)
     throw new Error("impossible");
@@ -223,6 +238,7 @@ doUpdateJson = (data: unknown): void => {
   this.doPollUpdateChange(data);
 };
 
+//Updates the poll information after voting
 doPollUpdateChange = (data: {poll?: unknown}): void => {
   const poll = parsePoll(data.poll);
   if(poll !== undefined) {
@@ -233,11 +249,12 @@ doPollUpdateChange = (data: {poll?: unknown}): void => {
   }
 };
 
-//doUpdateError
+//Handles /update errors 
 doUpdateError = (msg: string): void => {
   console.error(`Error fetching /api/update: ${msg}`);
 };
 
+//Back to home page 
 doBackClick = (_: MouseEvent<HTMLButtonElement>): void => {
   this.props.onBackClick();
 };

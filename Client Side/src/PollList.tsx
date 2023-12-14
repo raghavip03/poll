@@ -1,3 +1,7 @@
+/**
+* Poll List Page.
+* Lists polls ongoing and closed in separate lists. 
+*/
 import React, { Component, MouseEvent } from "react";
 import { parsePoll, Poll } from "./poll";
 import { isRecord } from "./record";
@@ -12,7 +16,6 @@ type ListState = {
   polls: Poll[] | undefined,
 };
 
-//renders the list of options and "new" button to create a new poll
 export class PollList extends Component<ListProps, ListState> {
   constructor(props: ListProps) {
     super(props);
@@ -29,6 +32,7 @@ export class PollList extends Component<ListProps, ListState> {
     }
   };
 
+  //Renders the main page 
   render = (): JSX.Element => {
     return (
       <div>
@@ -42,6 +46,8 @@ export class PollList extends Component<ListProps, ListState> {
       </div>
     );
   };
+
+  //Renders the main page with different poll lists
   renderPolls = (open: boolean): JSX.Element => {
     if (this.state.polls === undefined) {
       return <p>Loading open polls...</p>;
@@ -83,7 +89,14 @@ doListResp = (resp: Response): void => {
     this.doListError(`bad status code from /api/list: ${resp.status}`);
   }
 };
-//doListJson
+
+//The server is called to populate the list every time the page reloads
+doRefreshClick = (): void => {
+fetch("api/list").then(this.doListResp)
+.catch(() => this.doListError("failed to connect to server"));
+}
+  
+//Handles /list from the server and populates the poll data
 doListJson = (data: unknown): void => {
   if(!isRecord(data)) {
     console.error("bad data from /api/list: not a record", data);
@@ -103,20 +116,17 @@ doListJson = (data: unknown): void => {
   this.setState({polls, now: Date.now()});
 }
 
-doRefreshClick = (): void => {
-  fetch("api/list").then(this.doListResp)
-  .catch(() => this.doListError("failed to connect to server"));
-}
-
-//doListError
+//Handles /list errors 
 doListError = (msg: string): void => {
   console.error(`Error fetching /api/list: ${msg}`);
 };
 
+//When "New" is clicked page changes to NewPoll
 doNewClick = (_evt: MouseEvent<HTMLButtonElement>): void => {
   this.props.onNewClick();
 };
 
+//When the poll name is clicked, page is redirected to PollDetails 
 doPollClick = (evt: MouseEvent<HTMLAnchorElement>, name: string): void => {
   evt.preventDefault();
   this.props.onPollClick(name);

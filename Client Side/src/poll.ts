@@ -10,14 +10,19 @@ export type Poll = {
   readonly optionObj: Option[],
   readonly voteObj: VoteInfo[],
 }
+
+//Description of an individual option
 export type Option = {
   readonly optionName: string,
   readonly optionVotes: number
 }
+
+//Description of individual voter info
 export type VoteInfo = {
   readonly voterName: string,
   readonly votedFor: string,
 }
+
 /**
  * Parses unkown data into a Poll. Will log an error and return undefined
  * if it is not a valid Poll

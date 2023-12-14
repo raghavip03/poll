@@ -1,3 +1,7 @@
+/**
+* New Poll Page. 
+* Asks users for the Poll Name, Minutes, and Option 
+*/
 import React, {Component, ChangeEvent, MouseEvent} from "react";
 import { isRecord } from "./record";
 

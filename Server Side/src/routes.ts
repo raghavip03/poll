@@ -7,7 +7,6 @@ type SafeRequest = Request<ParamsDictionary, {}, Record<string, unknown>>;
 type SafeResponse = Response;  // only writing, so no need to check
 
 //Description of an indiviudal poll
-// RI:
 export type Poll = {
   pollName: string;
   endTime: number;
@@ -17,11 +16,14 @@ export type Poll = {
   optionObj: Option[];
   voteObj: VoteInfo[];
  }
+
+//Description of an individual option
  export type Option = {
    optionName: string,
    optionVotes: number
  }
 
+//Description of an individual voter info
  export type VoteInfo = {
     voterName: string,
     votedFor: string,
